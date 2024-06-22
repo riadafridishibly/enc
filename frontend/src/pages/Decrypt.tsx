@@ -12,6 +12,10 @@ import {
   Stack,
   Textarea,
   Text,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react'
 
 function PrivateKeyValidator(file: File): FileError | null {
@@ -127,6 +131,7 @@ export default function Decrypt() {
   const [cipherText, setCipherText] = React.useState('')
   const [plainText, setPlainText] = React.useState('')
   const [privateKey, setPrivateKey] = React.useState('')
+  const [error, setError] = React.useState('')
   return (
     <Root>
       <Stack width={'100%'} gap={3}>
@@ -144,12 +149,23 @@ export default function Decrypt() {
           colorScheme="purple"
           onClick={() => {
             const value = window.Decrypt(cipherText, [privateKey])
-            console.log(value)
-            setPlainText(value.data ?? '')
+            setPlainText(value?.data ?? '')
+            if (value?.error) {
+              setError(value.error)
+            } else {
+              setError('')
+            }
           }}
         >
           Decrypt
         </Button>
+        {error && (
+          <Alert borderRadius={"md"} status="error">
+            <AlertIcon />
+            <AlertTitle>Decryption Failed</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         {plainText && (
           <Textarea
             rows={7}

@@ -146,6 +146,7 @@ function EncryptWrapper() {
   const [checked, setChecked] = useState<CheckedRecipients>(initialValues)
   const [plaintext, setPlaintext] = useState('')
   const [ciphertext, setChipertext] = useState('')
+  const [error, setError] = useState('')
 
   useMemo(() => {
     setChipertext('')
@@ -173,13 +174,24 @@ function EncryptWrapper() {
                 .filter((v) => v.checked)
                 .map((v) => v.publicKey),
             )
-            console.log('res:', res)
             setChipertext(() => res.data ?? '')
+            if (res?.error) {
+              setError(res.error)
+            } else {
+              setError('')
+            }
           }}
           size="lg"
         >
           Encrypt
         </Button>
+        {error && (
+          <Alert borderRadius={'md'} status="error">
+            <AlertIcon />
+            <AlertTitle>Encryption Failed</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         {ciphertext && (
           <>
             <Textarea readOnly rows={7} value={ciphertext} />
