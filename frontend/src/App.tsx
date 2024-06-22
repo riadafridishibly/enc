@@ -12,66 +12,66 @@ import './types.ts'
 import PublicKeys from './pages/PublicKeys.tsx'
 
 export async function InitiateStream() {
-	// @ts-ignore
-	const go = new window.Go()
-	await WebAssembly.instantiateStreaming(
-		fetch('/enc/assets/main.wasm'),
-		go.importObject,
-	).then((result) => {
-		go.run(result.instance)
-	})
+  // @ts-ignore
+  const go = new window.Go()
+  await WebAssembly.instantiateStreaming(
+    fetch('/enc/assets/main.wasm'),
+    go.importObject,
+  ).then((result) => {
+    go.run(result.instance)
+  })
 }
 
 function RouterSetup() {
-	return (
-		<Router hook={useHashLocation}>
-			<Switch>
-				<Route path="/" component={Home} />
-				<Route path="/genkey" component={GenKey} />
-				<Route path="/encrypt" component={EncryptPage} />
-				<Route path="/decrypt/:ciphertext" component={DecryptPage} />
-				<Route path="/decrypt" component={DecryptPage} />
-				<Route path="/share_keys/:publicKey" component={ShareKeys} />
-				<Route path="/share_keys" component={ShareKeys} />
-				<Route path="/local_keys" component={PublicKeys} />
-				<Route path="*">
-					{(params) => (
-						<Root>
-							<div>
-								404, Sorry the page{' '}
-								<Text as="span" color="crimson">
-									{params['*']}
-								</Text>{' '}
-								does not exist!
-							</div>
-						</Root>
-					)}
-				</Route>
-			</Switch>
-		</Router>
-	)
+  return (
+    <Router hook={useHashLocation}>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/genkey" component={GenKey} />
+        <Route path="/encrypt" component={EncryptPage} />
+        <Route path="/decrypt/:ciphertext" component={DecryptPage} />
+        <Route path="/decrypt" component={DecryptPage} />
+        <Route path="/share_keys/:publicKey" component={ShareKeys} />
+        <Route path="/share_keys" component={ShareKeys} />
+        <Route path="/local_keys" component={PublicKeys} />
+        <Route path="*">
+          {(params) => (
+            <Root>
+              <div>
+                404, Sorry the page{' '}
+                <Text as="span" color="crimson">
+                  {params['*']}
+                </Text>{' '}
+                does not exist!
+              </div>
+            </Root>
+          )}
+        </Route>
+      </Switch>
+    </Router>
+  )
 }
 
 function App() {
-	const [wasmLoaded, setWasmLoaded] = useState(false)
+  const [wasmLoaded, setWasmLoaded] = useState(false)
 
-	useEffect(() => {
-		InitiateStream()
-			.then(() => setWasmLoaded(true))
-			.catch((err) => console.error(err))
-	}, [])
+  useEffect(() => {
+    InitiateStream()
+      .then(() => setWasmLoaded(true))
+      .catch((err) => console.error(err))
+  }, [])
 
-	return (
-		<>
-			{wasmLoaded ? (
-				<RouterSetup />
-			) : (
-				<Root>
-					<h3>Loading wasm...</h3>{' '}
-				</Root>
-			)}
-		</>
-	)
+  return (
+    <>
+      {wasmLoaded ? (
+        <RouterSetup />
+      ) : (
+        <Root>
+          <h3>Loading wasm...</h3>{' '}
+        </Root>
+      )}
+    </>
+  )
 }
 
 export default App
