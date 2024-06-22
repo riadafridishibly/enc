@@ -11,11 +11,12 @@ import {
 	Stack,
 	Text,
 	useClipboard,
+	useToast,
 } from '@chakra-ui/react'
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { GenerateKeysResult } from '../types'
-import { useSelfInfo } from '../utils/storage'
+import { SelfInfo, useSelfInfo } from '../utils/storage'
 import { SharePublicKey } from './SharePublicKey'
 
 function PasswordInputWithCopyButton({
@@ -91,11 +92,18 @@ function DownloadPrivateKeyButton({
 }) {
 	// TODO: Might change with json
 	const data = `# ${email}\n${privateKey}\n`
+	const filename =
+		'private_key_' +
+		email
+			.replace('@', '_at_')
+			.replace(/[^a-z0-9]/gi, '_')
+			.toLowerCase()
 	const url = window.URL.createObjectURL(
 		new Blob([data], { type: 'text/plain' }),
 	)
+	// TODO: Change the filename use email name (sanitize path)
 	return (
-		<Link href={url} download="private_key.txt">
+		<Link href={url} download={filename}>
 			<Button size="lg" colorScheme="purple">
 				Download Private Key
 			</Button>
@@ -131,8 +139,7 @@ function RenderKeys({
 	)
 }
 
-function SelfKey() {
-	const { self } = useSelfInfo()
+function SelfKey({ self }: { self: SelfInfo }) {
 	if (!self || !self.pubKey) {
 		return null
 	}
@@ -147,7 +154,17 @@ function SelfKey() {
 export function GenerateKeys() {
 	const [email, setEmail] = useState('')
 	const [keys, setKeys] = useState<GenerateKeysResult | null>(null)
-	const { setSelf } = useSelfInfo()
+	const { self, setSelf } = useSelfInfo()
+	const toast = useToast()
+
+	useEffect(() => {
+		// If public key is already not set for self, and we have public key,
+		// set this for the default one
+		if (!self?.pubKey && keys?.publicKey) {
+			setSelf(email, keys?.publicKey)
+		}
+	}, [keys?.publicKey, email])
+
 	return (
 		<Center
 			// style={{ border: "1px solid purple" }}
@@ -159,22 +176,41 @@ export function GenerateKeys() {
 			{keys ? (
 				<>
 					<RenderKeys email={email} keys={keys} />
-					<Button
-						onClick={(_) => {
-							if (keys.publicKey) {
-								setSelf(email, keys.publicKey)
-							}
-						}}
-						colorScheme="green"
-						width={'100%'}
-						size={'lg'}
-					>
-						Save Public Key
-					</Button>
+					{self?.pubKey !== keys.publicKey && (
+						<Button
+							onClick={(_) => {
+								if (!keys?.publicKey) {
+									return
+								}
+								// Key already exists
+								if (self?.pubKey) {
+									if (
+										confirm(`Replace the existing public key for ${email}?`)
+									) {
+										setSelf(email, keys.publicKey)
+									}
+								} else {
+									setSelf(email, keys.publicKey)
+								}
+								toast({
+									title: 'Public Key Saved',
+									description: 'Your public key is saved in local storage',
+									status: 'success',
+									duration: 4000,
+									isClosable: true,
+								})
+							}}
+							colorScheme="green"
+							width={'100%'}
+							size={'lg'}
+						>
+							Save Public Key
+						</Button>
+					)}
 				</>
 			) : (
 				<Stack width={'lg'}>
-					<SelfKey />
+					<SelfKey self={self} />
 					<InputGroup width={'100%'}>
 						<InputLeftElement pointerEvents="none">
 							<EmailIcon color="gray.300" />
