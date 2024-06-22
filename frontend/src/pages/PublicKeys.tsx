@@ -11,6 +11,7 @@ import {
   Stack,
   StackDivider,
   Text,
+  useToast,
 } from '@chakra-ui/react'
 import { DeleteIcon } from '@chakra-ui/icons'
 import { SharePublicKey } from '../components/SharePublicKey'
@@ -24,6 +25,7 @@ function PublicKeyListing({
   pubKeys: PublicKeys[]
   removeKey: (pubKey: PublicKeys) => void
 }) {
+  const toast = useToast()
   return (
     <Card width={'100%'}>
       <CardHeader>
@@ -43,6 +45,14 @@ function PublicKeyListing({
                         confirm(`Delete public key for ${v.email ?? v.pubKey}?`)
                       ) {
                         removeKey({ email: v.email, pubKey: v.pubKey })
+                        toast({
+                          title: 'Public Key Removed',
+                          description:
+                            `Public Key for ${v.email} is removed`,
+                          status: 'success',
+                          duration: 4000,
+                          isClosable: true,
+                        })
                       }
                     }}
                     variant={'subtle'}

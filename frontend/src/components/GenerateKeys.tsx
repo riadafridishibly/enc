@@ -182,23 +182,26 @@ export function GenerateKeys() {
                 if (!keys?.publicKey) {
                   return
                 }
+                const sendToast = () =>
+                  toast({
+                    title: 'Public Key Saved',
+                    description: 'Your public key is saved in local storage',
+                    status: 'success',
+                    duration: 4000,
+                    isClosable: true,
+                  })
                 // Key already exists
                 if (self?.pubKey) {
                   if (
                     confirm(`Replace the existing public key for ${email}?`)
                   ) {
                     setSelf(email, keys.publicKey)
+                    sendToast()
                   }
                 } else {
                   setSelf(email, keys.publicKey)
+                  sendToast()
                 }
-                toast({
-                  title: 'Public Key Saved',
-                  description: 'Your public key is saved in local storage',
-                  status: 'success',
-                  duration: 4000,
-                  isClosable: true,
-                })
               }}
               colorScheme="green"
               width={'100%'}
