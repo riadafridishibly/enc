@@ -16,7 +16,7 @@ import {
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { GenerateKeysResult } from '../types'
-import { SelfInfo, useSelfInfo } from '../utils/storage'
+import { usePublicKeys, type SelfInfo } from '../utils/storage'
 import { SharePublicKey } from './SharePublicKey'
 
 function PasswordInputWithCopyButton({
@@ -27,11 +27,13 @@ function PasswordInputWithCopyButton({
   readOnly: boolean
 }) {
   const { onCopy, value, setValue, hasCopied } = useClipboard('')
+  const [show, setShow] = React.useState(false)
+  const handleClick = () => setShow(!show)
+
   useEffect(() => {
     setValue(defaultValue)
   }, [defaultValue])
-  const [show, setShow] = React.useState(false)
-  const handleClick = () => setShow(!show)
+
   return (
     <Flex mb={2}>
       <InputGroup size="md" mr={2}>
@@ -154,7 +156,7 @@ function SelfKey({ self }: { self: SelfInfo }) {
 export function GenerateKeys() {
   const [email, setEmail] = useState('')
   const [keys, setKeys] = useState<GenerateKeysResult | null>(null)
-  const { self, setSelf } = useSelfInfo()
+  const { self, setSelf } = usePublicKeys()
   const toast = useToast()
 
   useEffect(() => {
@@ -212,27 +214,31 @@ export function GenerateKeys() {
           )}
         </>
       ) : (
-        <Stack width={'lg'}>
+        <Stack width={'100%'} gap={16}>
           <SelfKey self={self} />
-          <InputGroup width={'100%'}>
-            <InputLeftElement pointerEvents="none">
-              <EmailIcon color="gray.300" />
-            </InputLeftElement>
-            <Input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              type="email"
-              placeholder="Your Email"
-            />
-          </InputGroup>
-          <Button
-            onClick={(_) => setKeys(window.GenerateKeys())}
-            colorScheme="green"
-            width={'100%'}
-            size={'lg'}
-          >
-            Generate Keys
-          </Button>
+          <Flex width={'100%'} alignItems="center" direction="column">
+            <Stack width="100%" maxWidth="lg" gap={2}>
+              <InputGroup width={'100%'}>
+                <InputLeftElement pointerEvents="none">
+                  <EmailIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  type="email"
+                  placeholder="Your Email"
+                />
+              </InputGroup>
+              <Button
+                onClick={(_) => setKeys(window.GenerateKeys())}
+                colorScheme="green"
+                width={'100%'}
+                size={'lg'}
+              >
+                Generate Keys
+              </Button>
+            </Stack>
+          </Flex>
         </Stack>
       )}
     </Center>

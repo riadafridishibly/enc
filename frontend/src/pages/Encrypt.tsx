@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Root from '../layouts/Root'
 import {
   Alert,
@@ -47,7 +47,7 @@ function EncryptForList({
           onChange={(e) => {
             setCheckedRecipients((curr) => {
               const newObject = { ...curr }
-              for (let key of Object.keys(newObject)) {
+              for (const key of Object.keys(newObject)) {
                 const v = newObject[key]
                 newObject[key] = { ...v, checked: e.target.checked }
               }
@@ -100,8 +100,7 @@ function Editor({
   // 3. Share the encrypted text
   //  - {email: ..., pubKey: ..., cipherText: ...}
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    let inputValue = e.target.value
-    setPlainText(inputValue)
+    setPlainText(e.target.value)
   }
 
   return (
@@ -139,8 +138,8 @@ function RenderErrors({ pubKeys }: { pubKeys: PublicKeys[] }) {
 
 function EncryptWrapper() {
   const { pubKeys } = usePublicKeys()
-  let initialValues: CheckedRecipients = {}
-  for (let d of pubKeys) {
+  const initialValues: CheckedRecipients = {}
+  for (const d of pubKeys) {
     initialValues[d.email || d.pubKey] = { publicKey: d.pubKey, checked: true }
   }
   const [checked, setChecked] = useState<CheckedRecipients>(initialValues)
@@ -148,7 +147,7 @@ function EncryptWrapper() {
   const [ciphertext, setChipertext] = useState('')
   const [error, setError] = useState('')
 
-  useMemo(() => {
+  useEffect(() => {
     setChipertext('')
   }, [plaintext])
 

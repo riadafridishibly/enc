@@ -1,4 +1,4 @@
-import { PublicKeys, usePublicKeys, useSelfInfo } from '../utils/storage'
+import { PublicKeys, usePublicKeys } from '../utils/storage'
 import Root from '../layouts/Root'
 import { AddPublicKey } from '../components/AddPublicKey'
 import {
@@ -47,8 +47,7 @@ function PublicKeyListing({
                         removeKey({ email: v.email, pubKey: v.pubKey })
                         toast({
                           title: 'Public Key Removed',
-                          description:
-                            `Public Key for ${v.email} is removed`,
+                          description: `Public Key for ${v.email} is removed`,
                           status: 'success',
                           duration: 4000,
                           isClosable: true,
@@ -74,12 +73,11 @@ function PublicKeyListing({
 }
 
 export default function PublicKeysPage() {
-  const { self } = useSelfInfo()
-  const { pubKeys, addKey, removeKey } = usePublicKeys()
+  const { self, pubKeys, addKey, removeKey } = usePublicKeys()
   return (
     <Root>
-      <Box mb={4} width={'xl'}>
-        <AddPublicKey addKey={addKey} />
+      <Box mb={8} width="100%">
+        <AddPublicKey addKey={addKey} allKeys={pubKeys} />
       </Box>
       <PublicKeyListing pubKeys={pubKeys} removeKey={removeKey} />
       {self && <SharePublicKey email={self.email} publicKey={self.pubKey} />}

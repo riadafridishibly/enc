@@ -134,46 +134,48 @@ export default function Decrypt() {
   const [error, setError] = React.useState('')
   return (
     <Root>
-      <Stack width={'100%'} gap={3}>
-        <Textarea
-          rows={7}
-          value={cipherText}
-          onChange={(e) => setCipherText(e.target.value)}
-          placeholder="Paste your ciphertext here..."
-        />
-        <Dropzone setPrivateKey={setPrivateKey} />
-        <Text>Private Key</Text>
-        <PrivateKeyField value={privateKey} setValue={setPrivateKey} />
-        <Button
-          size="lg"
-          colorScheme="purple"
-          onClick={() => {
-            const value = window.Decrypt(cipherText, [privateKey])
-            setPlainText(value?.data ?? '')
-            if (value?.error) {
-              setError(value.error)
-            } else {
-              setError('')
-            }
-          }}
-        >
-          Decrypt
-        </Button>
-        {error && (
-          <Alert borderRadius={"md"} status="error">
-            <AlertIcon />
-            <AlertTitle>Decryption Failed</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        {plainText && (
+      <Box pt={8} width={'100%'} height={'100%'}>
+        <Stack width={'100%'} gap={3}>
           <Textarea
             rows={7}
-            value={plainText}
-            onChange={(e) => setPlainText(e.target.value)}
+            value={cipherText}
+            onChange={(e) => setCipherText(e.target.value)}
+            placeholder="Paste your ciphertext here..."
           />
-        )}
-      </Stack>
+          <Dropzone setPrivateKey={setPrivateKey} />
+          <Text>Private Key</Text>
+          <PrivateKeyField value={privateKey} setValue={setPrivateKey} />
+          <Button
+            size="lg"
+            colorScheme="purple"
+            onClick={() => {
+              const value = window.Decrypt(cipherText, [privateKey])
+              setPlainText(value?.data ?? '')
+              if (value?.error) {
+                setError(value.error)
+              } else {
+                setError('')
+              }
+            }}
+          >
+            Decrypt
+          </Button>
+          {error && (
+            <Alert borderRadius={'md'} status="error">
+              <AlertIcon />
+              <AlertTitle>Decryption Failed</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          {plainText && (
+            <Textarea
+              rows={7}
+              value={plainText}
+              onChange={(e) => setPlainText(e.target.value)}
+            />
+          )}
+        </Stack>
+      </Box>
     </Root>
   )
 }
