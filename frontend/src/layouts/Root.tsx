@@ -9,7 +9,8 @@ function Wrapper({ children }: { children: React.ReactNode }) {
       direction="column"
       alignItems={'center'}
       justifyContent={'center'}
-      width={'3xl'} // Set the inner container size
+      width="100%"
+      maxWidth="3xl"
     >
       {children}
     </Flex>
@@ -19,16 +20,10 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 export default function Root({ children }: { children: React.ReactNode }) {
   const [home] = useRoute('/')
   return (
-    <Flex
-      border={'blue'}
-      borderStyle={'solid'}
-      height={'100%'}
-      direction="column"
-      alignItems={'center'}
-    >
+    <Flex height="100%" direction="column" alignItems="center">
       {!home && (
-        <Link width={{}} as={WouterLink} to="/" asChild>
-          <Button width="md" height={'3rem'}>
+        <Link as={WouterLink} to="/" asChild>
+          <Button width="md" height="3rem">
             Go Home
           </Button>
         </Link>
