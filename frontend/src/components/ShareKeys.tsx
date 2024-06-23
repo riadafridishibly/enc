@@ -6,7 +6,7 @@ import { usePublicKeys } from '../utils/storage'
 
 export function ShareKeys() {
   const [_, setLocation] = useLocation()
-  const { addKey } = usePublicKeys()
+  const { pubKeys, addKey } = usePublicKeys()
   const parmas = useParams()
   // NOTE: This `key` is the router path param
   const stencil = btoa('{}')
@@ -23,6 +23,7 @@ export function ShareKeys() {
         <AddPublicKey
           email={data.email}
           pubKey={data.publicKey}
+          allKeys={pubKeys}
           addKey={(k) => {
             addKey(k)
             setLocation('/local_keys')
