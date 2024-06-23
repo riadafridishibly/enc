@@ -11,30 +11,13 @@ export type SelfInfo = {
   created: number // unix seconds
 }
 
-export function useSelfInfo() {
-  const { addKey } = usePublicKeys()
-  const [self, setSelf] = useLocalStorage<SelfInfo>('enc-me', undefined)
-  const setSelfEmailAndPubKey = (email: string, pubKey: string) => {
-    setSelf((_) => {
-      return {
-        email: email,
-        pubKey: pubKey,
-        created: Date.now(),
-      }
-    })
-    addKey({
-      email: email,
-      pubKey: pubKey,
-    })
-  }
-  return { self, setSelf: setSelfEmailAndPubKey }
-}
-
 export function usePublicKeys() {
   const [pubKeys, setPubKeys] = useLocalStorage<PublicKeys[]>(
     'enc-pub-keys',
     [],
   )
+  const [self, setSelf] = useLocalStorage<SelfInfo>('enc-me', undefined)
+
   const addKey = (pubKey: PublicKeys) => {
     if (pubKey.pubKey === '') {
       return
@@ -52,9 +35,36 @@ export function usePublicKeys() {
       if (pubKeyIndex >= 0) {
         curr.splice(pubKeyIndex, 1)
       }
+
+      // TODO: This shouldn't be here, there should be separate update
+      // call for this
+      if (self?.email === pubKey.email || self?.pubKey === pubKey.pubKey) {
+        setSelf((_) => {
+          return {
+            email: pubKey.email,
+            pubKey: pubKey.pubKey,
+            created: Date.now(),
+          }
+        })
+      }
       return [...curr, pubKey]
     })
   }
+
+  const setSelfEmailAndPubKey = (email: string, pubKey: string) => {
+    setSelf((_) => {
+      return {
+        email: email,
+        pubKey: pubKey,
+        created: Date.now(),
+      }
+    })
+    addKey({
+      email: email,
+      pubKey: pubKey,
+    })
+  }
+
   const removeKey = (pubKey: PublicKeys) => {
     setPubKeys((curr) => {
       return curr.filter((value) => {
@@ -62,5 +72,6 @@ export function usePublicKeys() {
       })
     })
   }
-  return { pubKeys, addKey, removeKey }
+
+  return { pubKeys, addKey, removeKey, self, setSelf: setSelfEmailAndPubKey }
 }
