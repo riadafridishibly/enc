@@ -18,7 +18,7 @@ export function SharePublicKey({
     email: email,
     publicKey: publicKey,
   })
-  let url = new URL(window.location.href)
+  const url = new URL(window.location.href)
   url.hash = `/share_keys/${btoa(shareableData)}`
   const shareLink = url.toString() //  `${window.location.origin}/#/share_keys/${btoa(shareableData)}`
   const { onCopy, hasCopied } = useClipboard(shareLink)

@@ -43,14 +43,14 @@ export function Dropzone({
     // NOTE: only take the first file for now
     acceptedFiles.slice(0, 1).forEach((file) => {
       file.text().then((data) => {
-        for (let line of data.split('\n')) {
+        for (const line of data.split('\n')) {
           if (line.trim().startsWith('AGE-SECRET-KEY-')) {
             setPrivateKey(line)
           }
         }
       })
     })
-  }, [])
+  }, [setPrivateKey])
   const { fileRejections, getRootProps, getInputProps, isDragActive } =
     useDropzone({
       onDrop,
